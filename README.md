@@ -1,19 +1,6 @@
-# 🎈 Blank app template
+# :hospital: 北九州市の感染症発生動向（定点報告）
 
-A simple Streamlit app template for you to modify!
+[北九州市オープンデータ](https://odcs.bodik.jp/401005/)のウェブサイトから取得した 
+ 感染症発生動向を表現したStreamlitアプリです。
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
-
-### How to run it on your own machine
-
-1. Install the requirements
-
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://infectious-disease-outbreaks-ktq.streamlit.app/)
