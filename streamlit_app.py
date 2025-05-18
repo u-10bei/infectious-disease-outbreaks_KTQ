@@ -1,7 +1,7 @@
 import streamlit as st
-import requests
 import pandas as pd
 import math
+import datas as dt
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
@@ -12,18 +12,7 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # Declare some useful functions.
 
-@st.cache_data
-def get_ido_data():
-    
-    DATA_URI = 'https://data.bodik.jp/api/3/action/datastore_search?resource_id=dd3b77f0-05c0-4899-892c-04909fd210e0&limit=1000'
-    res_data = requests.get(DATA_URI)
-    datas= res_data.json()
-    ido_df = pd.DataFrame(datas["result"]["records"])
-    ido_df.insert(6, 'date', pd.to_datetime(ido_df['年'].astype(str) +ido_df['週'].astype(str) + '1', format='%Y%W%w'))
-
-    return ido_df
-
-ido_df = get_ido_data()
+ido_df = dt.get_ido_data()
 
 # -----------------------------------------------------------------------------
 # Draw the actual page
@@ -38,38 +27,25 @@ ido_df = get_ido_data()
 
 # Add some spacing
 ''
+
+# 感染症のリスト
+diseases = dt.get_diseases_label(ido_df)
+
+# 最新データ
+current_data = dt.get_current_data(ido_df)
+
+# 最新データのうち最も多い感染症
+max_disease = dt.get_max_disease(current_data)
+
 ''
 
-diseases = ['新型コロナウイルス感染症',
-            'インフルエンザ',
-            '急性呼吸器感染症(ARI)',
-            'ＲＳウイルス感染症',
-            '咽頭結膜熱',
-            'Ａ群溶血性レンサ球菌咽頭炎',
-        	'感染性胃腸炎',
-            '水痘',
-            '手足口病',
-            '伝染性紅斑',
-            '突発性発しん',
-            'ヘルパンギーナ',
-            '流行性耳下腺炎',
-            '急性出血性結膜炎',
-            '流行性角結膜炎',
-            '細菌性髄膜炎',
-            '無菌性髄膜炎',
-            'マイコプラズマ肺炎',
-            'クラミジア肺炎',
-            '感染性胃腸炎（ロタウイルス）'
-]
-
-current_data = ido_df[ido_df['_id'] == ido_df['_id'].max()]
-max_disease = current_data.iloc[:, 7:].apply(pd.to_numeric).idxmax(axis=1)
-
+# グラフの選択
 selected_type = st.selectbox(
     'どのグラフを表示したいですか？',
     ('過去１年間の状況', '去年と今年の比較', '過去３年の比較')
 )
 
+# 感染症の選択
 if selected_type == '過去１年間の状況':
     selected_disease = st.multiselect(
         'どの感染症を確認したいですか？',
@@ -84,30 +60,26 @@ else:
 
 ''
 ''
-''
 
 # Filter the data
 if selected_type == '過去１年間の状況':
-    filtered_key = pd.to_datetime((current_data.iloc[0]['年'] - 1).astype(str) + current_data.iloc[0]['週'].astype(str) + "1", format='%Y%W%w')
-    filtered_ido_df_w = ido_df[
-    (ido_df['date'] >= filtered_key)
-    ]    
+    filtered_column = ido_df['date']
+    filtered_key = pd.to_datetime((current_data.iloc[0]['年'] - 1).astype(str) + current_data.iloc[0]['週'].astype(str) + "1", format='%Y%W%w')  
 elif selected_type == '去年と今年の比較':
-    filtered_ido_df_w = ido_df[
-    (ido_df['年'] >= (ido_df['年'].max() - 1))
-    ]    
+    filtered_column = ido_df['年']
+    filtered_key = ido_df['年'].max() - 1
 elif selected_type == '過去３年の比較':
-    filtered_ido_df_w = ido_df[
-    (ido_df['年'] >= (ido_df['年'].max() - 2))
-    ]    
+    filtered_column = ido_df['年']        
+    filtered_key = ido_df['年'].max() - 2
 
-filtered_ido_df = filtered_ido_df_w.iloc[:, 4:].melt(id_vars=['date','年','週'], var_name='感染症', value_name='定点当たり患者数')
-filtered_ido_df.insert(3, '年週', filtered_ido_df['年'].astype(str) + '-' + filtered_ido_df['週'].apply(lambda x: f"{x:02d}"))
-filtered_ido_df['定点当たり患者数'] = filtered_ido_df['定点当たり患者数'].apply(pd.to_numeric)
+filtered_ido_df = dt.get_filtered_ido_df(filtered_column, 
+                                      filtered_key, 
+                                      ido_df)
 
 st.header(selected_type, divider='gray')
 
 ''
+# グラフの描画
 if selected_type == '過去１年間の状況':
     filtered_ido_df = filtered_ido_df[
         (filtered_ido_df['感染症'].isin(selected_disease))]
@@ -132,11 +104,11 @@ else:
 ''
 
 current_disease = current_data.iloc[:, 4:].melt(id_vars=['date','年','週'], var_name='感染症', value_name='定点当たり患者数')
-current_disease['定点当たり患者数'] = current_disease['定点当たり患者数'].apply(pd.to_numeric)
+dt.fix_disease(current_disease)
 
 lastweek_key = pd.to_datetime(current_data.iloc[0]['年'].astype(str) + (current_data.iloc[0]['週'] - 1).astype(str) + "1", format='%Y%W%w')
 lastweek_disease = ido_df[(ido_df['date'] == lastweek_key)].iloc[:, 4:].melt(id_vars=['date','年','週'], var_name='感染症', value_name='定点当たり患者数')
-lastweek_disease['定点当たり患者数'] = lastweek_disease['定点当たり患者数'].apply(pd.to_numeric)
+dt.fix_disease(lastweek_disease)
 
 lastyear_key = pd.to_datetime((current_data.iloc[0]['年'] - 1).astype(str) + current_data.iloc[0]['週'].astype(str) + "1", format='%Y%W%w')
 lastyear_disease = ido_df[(ido_df['date'] == lastyear_key)].iloc[:, 4:].melt(id_vars=['date','年','週'], var_name='感染症', value_name='定点当たり患者数')
@@ -158,6 +130,9 @@ for i, types in enumerate(diseases):
         if math.isnan(lastweek_number):
             lw_growth = 'n/a'
             lw_delta_color = 'off'
+        elif current_number == lastweek_number:
+            lw_growth = 0
+            lw_delta_color = 'off'            
         else:
             lw_growth = f'{current_number - lastweek_number:,.2f}'
             lw_delta_color = 'normal'
@@ -165,6 +140,9 @@ for i, types in enumerate(diseases):
         if math.isnan(lastyear_number):
             ly_growth = 'n/a'
             ly_delta_color = 'off'
+        elif current_number == lastyear_number:
+            ly_growth = 0
+            ly_delta_color = 'off'       
         else:
             ly_growth = f'{current_number - lastyear_number:,.2f}'
             ly_delta_color = 'normal'
