@@ -5,7 +5,7 @@ import requests
 @st.cache_data
 def get_ido_data():
     
-    DATA_URI = 'https://data.bodik.jp/api/3/action/datastore_search?resource_id=dd3b77f0-05c0-4899-892c-04909fd210e0&limit=1000'
+    DATA_URI = 'https://data.bodik.jp/api/3/action/datastore_search?resource_id=933fd3a7-c028-496e-a6c3-ac23314df6e4&limit=1000'
     res_data = requests.get(DATA_URI)
     datas= res_data.json()
     ido_df = pd.DataFrame(datas["result"]["records"])
