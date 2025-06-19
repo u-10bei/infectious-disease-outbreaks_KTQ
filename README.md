@@ -9,10 +9,8 @@
 
 ## 使用技術
 
-\<p style="display: inline"\>
-\<img src="https://img.shields.io/badge/Python-3.11-gray?style=for-the-badge&labelColor=blue"\>
-\<img src="https://img.shields.io/badge/streamlit-%23FF4B4B?style=for-the-badge
-"\>
+[![Python](https://img.shields.io/badge/Python-3.11-gray?style=for-the-badge&labelColor=blue)](https://docs.python.org/ja/3.11/installing/index.html) 
+[![Streamlit](https://img.shields.io/badge/streamlit-%23FF4B4B?style=for-the-badge)](https://streamlit.io/)
 
 
 ## 目次
@@ -20,8 +18,6 @@
 1.  [プロジェクトについて](https://www.google.com/search?q=%23%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)
 2.  [ディレクトリ構成](https://www.google.com/search?q=%23%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E6%A7%8B%E6%88%90)
 3.  [ローカルでの実行方法](https://www.google.com/search?q=%23%E3%83%AD%E3%83%BC%E3%82%AB%E3%83%AB%E3%81%A7%E3%81%AE%E5%AE%9F%E8%A1%8C%E6%96%B9%E6%B3%95)
-
-\<div id="プロジェクトについて"\>\</div\>
 
 ## プロジェクトについて
 
@@ -32,8 +28,6 @@
   * 過去1年間、去年と今年、過去3年間の感染症データをグラフで比較
   * 各感染症の今週、先週、昨年同週の定点当たり患者数を表示
 
-\<div id="ディレクトリ構成"\>\</div\>
-
 ## ディレクトリ構成
 
 ```
@@ -42,8 +36,6 @@
 ├── datas.py          # データ取得・加工用モジュール
 └── README.md         # このファイル
 ```
-
-\<div id="ローカルでの実行方法"\>\</div\>
 
 ## ローカルでの実行方法
 
